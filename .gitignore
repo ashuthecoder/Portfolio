@@ -205,11 +205,15 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+
+
 .env
 .env.local
 .env.production
 .env*.local
 .vercel
 node_modules/
+npm-debug.log*
 .DS_Store
 Thumbs.db
