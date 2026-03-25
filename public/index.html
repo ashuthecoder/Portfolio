@@ -358,13 +358,23 @@ let history = [], busy = false;
 
 function resize(el) { el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,110)+'px'; }
 function onKey(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();} }
-function suggest(btn) { document.getElementById('inp').value=btn.textContent; send(); }
+function suggest(btn) { const inp=document.getElementById('inp'); inp.value=btn.textContent; resize(inp); send(); }
 
 function addMsg(role, text) {
   const box = document.getElementById('messages');
   const d = document.createElement('div');
   d.className = `msg ${role}`;
-  d.innerHTML = `<div class="msg-av">${role==='bot'?'🤖':'🧑'}</div><div class="bubble">${text.replace(/\n/g,'<br>')}</div>`;
+  const av = document.createElement('div');
+  av.className = 'msg-av';
+  av.textContent = role === 'bot' ? '🤖' : '🧑';
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  text.split('\n').forEach((line, i) => {
+    if (i > 0) bubble.appendChild(document.createElement('br'));
+    bubble.appendChild(document.createTextNode(line));
+  });
+  d.appendChild(av);
+  d.appendChild(bubble);
   box.appendChild(d);
   box.scrollTop = box.scrollHeight;
 }

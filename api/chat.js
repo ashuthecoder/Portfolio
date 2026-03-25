@@ -1,4 +1,5 @@
 export default async function handler(req, res) {
+  if (!process.env.GEMINI_API_KEY) return res.status(500).json({ error: "Server configuration error." });
   const allowedOrigins = [process.env.ALLOWED_ORIGIN, "http://localhost:3000"].filter(Boolean);
   const origin = req.headers.origin || "";
   if (allowedOrigins.length > 0 && !allowedOrigins.includes(origin)) {
