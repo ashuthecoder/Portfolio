@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Your Name — Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #070b14; --surface: #0e1420; --surface2: #161d2e;
+      --border: #1f2d45; --accent: #38bdf8; --accent2: #818cf8;
+      --green: #34d399; --text: #e2e8f4; --text-muted: #64748b; --radius: 14px;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior: smooth; }
+    body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; min-height:100vh; overflow-x:hidden; }
+    body::before {
+      content:''; position:fixed; inset:0;
+      background: radial-gradient(ellipse 70% 50% at 5% 10%, rgba(56,189,248,0.07) 0%, transparent 60%),
+                  radial-gradient(ellipse 50% 60% at 95% 90%, rgba(129,140,248,0.07) 0%, transparent 60%);
+      pointer-events:none; z-index:0;
+    }
+    .layout { position:relative; z-index:1; display:grid; grid-template-columns:1fr 420px; min-height:100vh; }
+    .portfolio { padding:56px 52px; overflow-y:auto; max-height:100vh; }
+    .nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:64px; }
+    .nav-logo { font-family:'Syne',sans-serif; font-weight:800; font-size:18px; letter-spacing:-0.5px; }
+    .nav-logo span { color:var(--accent); }
+    .nav-links { display:flex; gap:24px; }
+    .nav-links a { color:var(--text-muted); text-decoration:none; font-size:13px; font-weight:500; transition:color 0.2s; }
+    .nav-links a:hover { color:var(--text); }
+    .hero { margin-bottom:64px; }
+    .status-pill {
+      display:inline-flex; align-items:center; gap:8px;
+      background:rgba(52,211,153,0.1); border:1px solid rgba(52,211,153,0.25);
+      color:var(--green); font-family:'Syne',sans-serif; font-size:11px; font-weight:700;
+      letter-spacing:2.5px; text-transform:uppercase; padding:6px 14px; border-radius:100px; margin-bottom:28px;
+    }
+    .status-dot { width:7px; height:7px; border-radius:50%; background:var(--green); animation:glow 2s infinite; }
+    @keyframes glow { 0%,100%{box-shadow:0 0 0 0 rgba(52,211,153,0.4)} 50%{box-shadow:0 0 0 5px rgba(52,211,153,0)} }
+    h1 { font-family:'Syne',sans-serif; font-size:clamp(2.6rem,4.5vw,4rem); font-weight:800; line-height:1.05; letter-spacing:-2px; margin-bottom:20px; }
+    h1 .name { color:var(--text); }
+    h1 .role { display:block; background:linear-gradient(90deg,var(--accent),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .hero-bio { font-size:1.05rem; color:var(--text-muted); font-weight:300; line-height:1.75; max-width:520px; margin-bottom:32px; }
+    .hero-actions { display:flex; gap:12px; flex-wrap:wrap; }
+    .btn-primary { display:inline-flex; align-items:center; gap:8px; background:var(--accent); color:#07101f; font-family:'Syne',sans-serif; font-size:13px; font-weight:700; padding:11px 22px; border-radius:10px; text-decoration:none; transition:all 0.2s; }
+    .btn-primary:hover { opacity:0.88; transform:translateY(-1px); }
+    .btn-ghost { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--border); color:var(--text-muted); font-size:13px; font-weight:500; padding:11px 22px; border-radius:10px; text-decoration:none; transition:all 0.2s; }
+    .btn-ghost:hover { border-color:var(--accent); color:var(--text); }
+    .skills-section { margin-bottom:56px; }
+    .section-title { font-family:'Syne',sans-serif; font-size:10.5px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--text-muted); margin-bottom:18px; }
+    .skills-grid { display:flex; flex-wrap:wrap; gap:8px; }
+    .skill-tag { background:var(--surface); border:1px solid var(--border); color:var(--text-muted); font-size:12.5px; font-weight:500; padding:6px 14px; border-radius:8px; transition:all 0.2s; cursor:default; }
+    .skill-tag:hover { border-color:var(--accent); color:var(--accent); background:rgba(56,189,248,0.06); }
+    .skill-tag.highlight { border-color:rgba(56,189,248,0.35); color:var(--accent); background:rgba(56,189,248,0.08); }
+    .projects-section { margin-bottom:56px; }
+    .project-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    .project-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:22px; transition:all 0.25s; position:relative; overflow:hidden; }
+    .project-card:hover { border-color:var(--accent); transform:translateY(-2px); }
+    .project-card::after { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--accent),var(--accent2)); opacity:0; transition:opacity 0.3s; }
+    .project-card:hover::after { opacity:1; }
+    .project-top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:12px; }
+    .project-icon { font-size:24px; }
+    .project-link { color:var(--text-muted); text-decoration:none; font-size:13px; transition:color 0.2s; }
+    .project-link:hover { color:var(--accent); }
+    .project-name { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; margin-bottom:7px; }
+    .project-desc { font-size:12.5px; color:var(--text-muted); line-height:1.65; margin-bottom:14px; }
+    .tech-row { display:flex; flex-wrap:wrap; gap:6px; }
+    .tech-chip { font-size:10.5px; background:rgba(129,140,248,0.1); color:var(--accent2); border-radius:5px; padding:2px 8px; font-weight:500; }
+    .security-banner { background:linear-gradient(135deg,rgba(56,189,248,0.08),rgba(129,140,248,0.08)); border:1px solid rgba(56,189,248,0.2); border-radius:var(--radius); padding:20px 24px; margin-bottom:56px; display:flex; align-items:flex-start; gap:16px; }
+    .security-icon { font-size:28px; flex-shrink:0; margin-top:2px; }
+    .security-title { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; margin-bottom:6px; color:var(--accent); }
+    .security-text { font-size:12.5px; color:var(--text-muted); line-height:1.7; }
+    .security-pills { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+    .sec-pill { font-size:11px; background:rgba(56,189,248,0.1); color:var(--accent); border:1px solid rgba(56,189,248,0.2); border-radius:6px; padding:2px 10px; }
+    .experience-section { margin-bottom:56px; }
+    .exp-list { display:flex; flex-direction:column; }
+    .exp-item { display:flex; gap:18px; padding:18px 0; border-bottom:1px solid var(--border); }
+    .exp-item:last-child { border-bottom:none; }
+    .exp-line { display:flex; flex-direction:column; align-items:center; }
+    .exp-dot { width:9px; height:9px; border-radius:50%; background:var(--accent); flex-shrink:0; margin-top:5px; }
+    .exp-connector { width:1px; flex:1; background:var(--border); margin-top:6px; }
+    .exp-role { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; margin-bottom:3px; }
+    .exp-company { color:var(--accent); font-size:12.5px; font-weight:500; margin-bottom:3px; }
+    .exp-period { color:var(--text-muted); font-size:11.5px; }
+    .exp-desc { font-size:12.5px; color:var(--text-muted); line-height:1.65; margin-top:8px; }
+    .contact-section { margin-bottom:40px; }
+    .contact-grid { display:flex; gap:10px; flex-wrap:wrap; }
+    .contact-link { display:flex; align-items:center; gap:8px; background:var(--surface); border:1px solid var(--border); color:var(--text-muted); text-decoration:none; padding:10px 18px; border-radius:10px; font-size:13px; font-weight:500; transition:all 0.2s; }
+    .contact-link:hover { border-color:var(--accent); color:var(--text); }
+    .chat-panel { background:var(--surface); border-left:1px solid var(--border); display:flex; flex-direction:column; height:100vh; position:sticky; top:0; }
+    .chat-header { padding:22px 22px 18px; border-bottom:1px solid var(--border); }
+    .chat-header-row { display:flex; align-items:center; gap:12px; margin-bottom:6px; }
+    .chat-avatar { width:40px; height:40px; border-radius:10px; background:linear-gradient(135deg,var(--accent),var(--accent2)); display:flex; align-items:center; justify-content:center; font-size:18px; }
+    .chat-name { font-family:'Syne',sans-serif; font-weight:700; font-size:14px; }
+    .chat-sub { font-size:11.5px; color:var(--text-muted); }
+    .online { width:8px; height:8px; border-radius:50%; background:#34d399; margin-left:auto; animation:glow 2s infinite; }
+    .suggestions { display:flex; flex-wrap:wrap; gap:6px; padding:12px 16px; border-bottom:1px solid var(--border); }
+    .sug-btn { font-size:11px; color:var(--text-muted); border:1px solid var(--border); border-radius:100px; padding:4px 11px; cursor:pointer; transition:all 0.2s; background:transparent; font-family:'DM Sans',sans-serif; }
+    .sug-btn:hover { border-color:var(--accent); color:var(--accent); }
+    .messages { flex:1; overflow-y:auto; padding:18px 16px 10px; display:flex; flex-direction:column; gap:12px; scrollbar-width:thin; scrollbar-color:var(--border) transparent; }
+    .msg { display:flex; gap:9px; animation:fadeUp 0.3s ease; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+    .msg.user { flex-direction:row-reverse; }
+    .msg-av { width:28px; height:28px; border-radius:8px; flex-shrink:0; font-size:13px; display:flex; align-items:center; justify-content:center; }
+    .msg.bot .msg-av { background:linear-gradient(135deg,var(--accent),var(--accent2)); }
+    .msg.user .msg-av { background:var(--surface2); border:1px solid var(--border); }
+    .bubble { max-width:84%; padding:11px 14px; border-radius:13px; font-size:13px; line-height:1.65; }
+    .msg.bot .bubble { background:var(--surface2); border:1px solid var(--border); border-bottom-left-radius:3px; }
+    .msg.user .bubble { background:linear-gradient(135deg,var(--accent),#60d0fa); color:#07101f; font-weight:500; border-bottom-right-radius:3px; }
+    .typing { display:flex; gap:4px; align-items:center; padding:12px 14px; }
+    .typing span { width:6px; height:6px; background:var(--text-muted); border-radius:50%; animation:bounce 1.2s infinite; }
+    .typing span:nth-child(2){animation-delay:.2s} .typing span:nth-child(3){animation-delay:.4s}
+    @keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+    .chat-input-row { padding:12px 14px; border-top:1px solid var(--border); display:flex; gap:9px; align-items:flex-end; }
+    textarea { flex:1; background:var(--surface2); border:1px solid var(--border); border-radius:11px; color:var(--text); font-family:'DM Sans',sans-serif; font-size:13px; padding:10px 13px; resize:none; max-height:110px; outline:none; line-height:1.5; transition:border-color 0.2s; }
+    textarea:focus { border-color:var(--accent); }
+    textarea::placeholder { color:var(--text-muted); }
+    .send { width:40px; height:40px; background:linear-gradient(135deg,var(--accent),#60d0fa); border:none; border-radius:11px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s; flex-shrink:0; }
+    .send:hover{transform:scale(1.06);opacity:0.9} .send:disabled{opacity:0.35;cursor:not-allowed;transform:none}
+    .send svg{width:16px;height:16px;fill:#07101f}
+    @media(max-width:900px){
+      .layout{grid-template-columns:1fr}
+      .portfolio{max-height:none;padding:32px 22px}
+      .chat-panel{height:580px;position:static;border-left:none;border-top:1px solid var(--border)}
+      .project-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+<div class="layout">
+
+  <section class="portfolio">
+    <nav class="nav">
+      <!-- 👤 CHANGE: Your initials -->
+      <div class="nav-logo"><span>Y</span>N</div>
+      <div class="nav-links">
+        <a href="#projects">Projects</a>
+        <a href="#experience">Experience</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </nav>
+
+    <div class="hero">
+      <div class="status-pill"><span class="status-dot"></span>Open to Work</div>
+      <h1>
+        <!-- 👤 CHANGE: Your name and role -->
+        <span class="name">Your Name</span>
+        <span class="role">Your Job Title</span>
+      </h1>
+      <!-- 👤 CHANGE: Your bio -->
+      <p class="hero-bio">Write 2–3 sentences about yourself here. What you build, what you care about, and what makes you different.</p>
+      <div class="hero-actions">
+        <!-- 👤 CHANGE: Your links -->
+        <a href="#contact" class="btn-primary">💬 Get in Touch</a>
+        <a href="https://github.com/YOURUSERNAME" class="btn-ghost" target="_blank">🐙 GitHub</a>
+        <a href="/resume.pdf" class="btn-ghost" target="_blank">📄 Resume</a>
+      </div>
+    </div>
+
+    <div class="skills-section" id="skills">
+      <p class="section-title">Technical Skills</p>
+      <div class="skills-grid">
+        <!-- 👤 CHANGE: Your skills. Add class="highlight" to your strongest ones -->
+        <span class="skill-tag highlight">React</span>
+        <span class="skill-tag highlight">Node.js</span>
+        <span class="skill-tag highlight">Python</span>
+        <span class="skill-tag">TypeScript</span>
+        <span class="skill-tag">PostgreSQL</span>
+        <span class="skill-tag">Docker</span>
+        <span class="skill-tag">AWS</span>
+        <span class="skill-tag">Git</span>
+      </div>
+    </div>
+
+    <div class="projects-section" id="projects">
+      <p class="section-title">Featured Projects</p>
+      <div class="project-grid">
+        <!-- 👤 CHANGE: Your real projects -->
+        <div class="project-card">
+          <div class="project-top">
+            <div class="project-icon">🔐</div>
+            <a href="#" class="project-link">↗</a>
+          </div>
+          <div class="project-name">Project One</div>
+          <div class="project-desc">Describe what it does and what problem it solves.</div>
+          <div class="tech-row">
+            <span class="tech-chip">React</span><span class="tech-chip">Node.js</span>
+          </div>
+        </div>
+        <div class="project-card">
+          <div class="project-top">
+            <div class="project-icon">📊</div>
+            <a href="#" class="project-link">↗</a>
+          </div>
+          <div class="project-name">Project Two</div>
+          <div class="project-desc">Describe what it does and what problem it solves.</div>
+          <div class="tech-row">
+            <span class="tech-chip">Python</span><span class="tech-chip">PostgreSQL</span>
+          </div>
+        </div>
+        <div class="project-card">
+          <div class="project-top">
+            <div class="project-icon">🤖</div>
+            <a href="#" class="project-link">↗</a>
+          </div>
+          <div class="project-name">Project Three</div>
+          <div class="project-desc">Describe what it does and what problem it solves.</div>
+          <div class="tech-row">
+            <span class="tech-chip">Next.js</span><span class="tech-chip">Redis</span>
+          </div>
+        </div>
+        <div class="project-card">
+          <div class="project-top">
+            <div class="project-icon">🌐</div>
+            <a href="#" class="project-link">↗</a>
+          </div>
+          <div class="project-name">This Portfolio</div>
+          <div class="project-desc">Secure AI-powered portfolio with serverless API proxy and security-first design.</div>
+          <div class="tech-row">
+            <span class="tech-chip">HTML/CSS/JS</span><span class="tech-chip">Vercel</span><span class="tech-chip">Gemini AI</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="security-banner">
+      <div class="security-icon">🛡️</div>
+      <div>
+        <div class="security-title">Security-First Development</div>
+        <div class="security-text">This portfolio is built with security best practices baked in. The AI chatbot uses a serverless proxy so API keys never touch the client. HTTP security headers, CSP, rate limiting, and input sanitization are all implemented.</div>
+        <div class="security-pills">
+          <span class="sec-pill">API Key Proxy</span>
+          <span class="sec-pill">CSP Headers</span>
+          <span class="sec-pill">Rate Limiting</span>
+          <span class="sec-pill">Input Sanitization</span>
+          <span class="sec-pill">CORS Policy</span>
+          <span class="sec-pill">XSS Protection</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="experience-section" id="experience">
+      <p class="section-title">Experience</p>
+      <div class="exp-list">
+        <!-- 👤 CHANGE: Your real experience -->
+        <div class="exp-item">
+          <div class="exp-line"><div class="exp-dot"></div><div class="exp-connector"></div></div>
+          <div>
+            <div class="exp-role">Job Title</div>
+            <div class="exp-company">Company Name</div>
+            <div class="exp-period">20XX — Present</div>
+            <div class="exp-desc">One line about what you built or achieved.</div>
+          </div>
+        </div>
+        <div class="exp-item">
+          <div class="exp-line"><div class="exp-dot"></div><div class="exp-connector"></div></div>
+          <div>
+            <div class="exp-role">Previous Job Title</div>
+            <div class="exp-company">Previous Company</div>
+            <div class="exp-period">20XX — 20XX</div>
+            <div class="exp-desc">One line about what you built or achieved.</div>
+          </div>
+        </div>
+        <div class="exp-item">
+          <div class="exp-line"><div class="exp-dot"></div></div>
+          <div>
+            <div class="exp-role">Earlier Role or Degree</div>
+            <div class="exp-company">Company or University</div>
+            <div class="exp-period">20XX — 20XX</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="contact-section" id="contact">
+      <p class="section-title">Contact</p>
+      <div class="contact-grid">
+        <!-- 👤 CHANGE: Your real links -->
+        <a href="mailto:you@email.com" class="contact-link">✉️ Email</a>
+        <a href="https://github.com/YOURUSERNAME" class="contact-link" target="_blank">🐙 GitHub</a>
+        <a href="https://linkedin.com/in/YOURPROFILE" class="contact-link" target="_blank">💼 LinkedIn</a>
+        <a href="/resume.pdf" class="contact-link" target="_blank">📄 Resume</a>
+      </div>
+    </div>
+  </section>
+
+  <aside class="chat-panel">
+    <div class="chat-header">
+      <div class="chat-header-row">
+        <div class="chat-avatar">🤖</div>
+        <div>
+          <div class="chat-name">Ask about me</div>
+          <div class="chat-sub">AI assistant · Gemini powered</div>
+        </div>
+        <div class="online"></div>
+      </div>
+    </div>
+    <div class="suggestions">
+      <!-- 👤 CHANGE: Update these to match your background -->
+      <button class="sug-btn" onclick="suggest(this)">What are your skills?</button>
+      <button class="sug-btn" onclick="suggest(this)">Show me your projects</button>
+      <button class="sug-btn" onclick="suggest(this)">Are you available to hire?</button>
+      <button class="sug-btn" onclick="suggest(this)">Your experience?</button>
+    </div>
+    <div class="messages" id="messages">
+      <div class="msg bot">
+        <div class="msg-av">🤖</div>
+        <!-- 👤 CHANGE: Your name in greeting -->
+        <div class="bubble">Hey! 👋 I'm an AI assistant who knows everything about [Your Name]'s background. Ask me anything!</div>
+      </div>
+    </div>
+    <div class="chat-input-row">
+      <textarea id="inp" rows="1" placeholder="Ask me anything..." onkeydown="onKey(event)" oninput="resize(this)"></textarea>
+      <button class="send" id="send-btn" onclick="send()">
+        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+      </button>
+    </div>
+  </aside>
+
+</div>
+<script>
+// ════════════════════════════════════════
+// 👤 FILL THIS IN — what the AI knows about you
+// ════════════════════════════════════════
+const PROFILE = `
+  Name: [Your Full Name]
+  Role: [Your Job Title]
+  Location: [City, Country]
+  Email: [you@email.com]
+  GitHub: [github.com/yourusername]
+  LinkedIn: [linkedin.com/in/yourprofile]
+  Available for: [Full-time / Freelance / Remote]
+
+  Bio:
+  [3-5 sentences about yourself]
+
+  Skills:
+  Frontend: React, TypeScript, etc.
+  Backend: Node.js, Python, etc.
+  Security: CSP headers, API proxying, rate limiting, input sanitization
+
+  Projects:
+  1. Project Name — what it does. Tech: X, Y, Z
+  2. Project Name — what it does. Tech: X, Y, Z
+  3. This Portfolio — Secure AI chatbot portfolio with serverless proxy. Tech: HTML/CSS/JS, Vercel, Gemini
+
+  Experience:
+  - Job Title @ Company (Year-Year): what you did
+  - Job Title @ Company (Year-Year): what you did
+
+  Education:
+  [Degree, University, Year]
+`;
+
+const SYSTEM = `You are a friendly AI assistant on a personal portfolio website. Answer questions about the person below. Be warm and concise (under 4 sentences). If unsure, invite them to email directly. Never invent info. Refer to the subject in third person.\n\nPROFILE:\n${PROFILE}`;
+
+let history = [], busy = false;
+
+function resize(el) { el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,110)+'px'; }
+function onKey(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();} }
+function suggest(btn) { document.getElementById('inp').value=btn.textContent; send(); }
+
+function addMsg(role, text) {
+  const box = document.getElementById('messages');
+  const d = document.createElement('div');
+  d.className = `msg ${role}`;
+  d.innerHTML = `<div class="msg-av">${role==='bot'?'🤖':'🧑'}</div><div class="bubble">${text.replace(/\n/g,'<br>')}</div>`;
+  box.appendChild(d);
+  box.scrollTop = box.scrollHeight;
+}
+function showTyping() {
+  const box = document.getElementById('messages');
+  const d = document.createElement('div');
+  d.id='typing'; d.className='msg bot';
+  d.innerHTML=`<div class="msg-av">🤖</div><div class="bubble typing"><span></span><span></span><span></span></div>`;
+  box.appendChild(d); box.scrollTop=box.scrollHeight;
+}
+function hideTyping() { document.getElementById('typing')?.remove(); }
+
+async function send() {
+  const inp=document.getElementById('inp'), btn=document.getElementById('send-btn');
+  const text=inp.value.trim();
+  if(!text||busy) return;
+  inp.value=''; inp.style.height='auto'; busy=true; btn.disabled=true;
+  addMsg('user', text);
+  const messages=[
+    {role:'user',parts:[{text:SYSTEM+'\n\nAcknowledge briefly.'}]},
+    {role:'model',parts:[{text:'Understood, ready to help.'}]},
+    ...history,
+    {role:'user',parts:[{text}]}
+  ];
+  history.push({role:'user',parts:[{text}]});
+  showTyping();
+  try {
+    const res = await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages})});
+    const data = await res.json();
+    hideTyping();
+    if(data.error) { addMsg('bot',`⚠️ ${data.error}`); }
+    else { history.push({role:'model',parts:[{text:data.reply}]}); addMsg('bot',data.reply); }
+  } catch(e) { hideTyping(); addMsg('bot','⚠️ Could not connect. Please try again.'); }
+  busy=false; btn.disabled=false; document.getElementById('inp').focus();
+}
+</script>
+</body>
+</html>
