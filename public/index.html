@@ -4,7 +4,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta name="description" content="Ashutosh Gupta — Cybersecurity Graduate, Sydney"/>
-  <meta name="theme-color" content="#060810"/>
+  <meta name="theme-color" content="#000000"/>
   <title>Ashutosh Gupta — Cybersecurity Graduate</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -23,36 +23,71 @@
 
   <div id="app" class="app" aria-busy="true">
 
-    <nav class="sidebar" aria-label="Section navigation">
-      <a href="#hero" class="sidebar-logo" aria-label="Home">AG</a>
-      <div class="sidebar-nav">
-        <a href="#about"      class="nav-item active" data-target="about">
-          <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="5" r="2.5"/><path d="M3 13c0-2.76 2.24-5 5-5s5 2.24 5 5"/></svg>
-          <span>About</span>
-        </a>
-        <a href="#skills"     class="nav-item" data-target="skills">
-          <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
-          <span>Skills</span>
-        </a>
-        <a href="#projects"   class="nav-item" data-target="projects">
-          <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M2 4h12v9a1 1 0 01-1 1H3a1 1 0 01-1-1V4zm4-2h4v2H6V2z"/></svg>
-          <span>Projects</span>
-        </a>
-        <a href="#experience" class="nav-item" data-target="experience">
-          <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M2 13V5l6-3 6 3v8l-6 2-6-2zm6-8v10"/></svg>
-          <span>Experience</span>
-        </a>
-        <a href="#contact"    class="nav-item" data-target="contact">
-          <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M2 4h12v8a1 1 0 01-1 1H3a1 1 0 01-1-1V4zm0 0l6 5 6-5"/></svg>
-          <span>Contact</span>
-        </a>
+    <!-- Top Navigation -->
+    <nav class="navbar" id="navbar">
+      <a href="#home" class="nav-logo">AG</a>
+      <div class="nav-links">
+        <a href="#about"      class="nav-link" data-target="about">About</a>
+        <a href="#skills"     class="nav-link" data-target="skills">Skills</a>
+        <a href="#projects"   class="nav-link" data-target="projects">Projects</a>
+        <a href="#experience" class="nav-link" data-target="experience">Experience</a>
+        <a href="#contact"    class="nav-link" data-target="contact">Contact</a>
       </div>
-      <div class="sidebar-status">
-        <span class="status-dot" aria-label="Available for work"></span>
+      <div class="nav-actions">
+        <span class="nav-status">
+          <span class="status-dot small"></span>
+          <span class="nav-status-text mono-tag">Open to Work</span>
+        </span>
+        <a href="/resume.pdf" class="btn btn-outline" target="_blank" rel="noopener">Resume ↗</a>
       </div>
     </nav>
 
-    <main class="content" id="content">
+    <!-- Chat Landing Page -->
+    <section class="chat-section" id="home">
+
+      <div class="chat-scroll-area" id="chat-scroll-area">
+
+        <!-- Welcome / Empty State -->
+        <div class="chat-empty" id="chat-empty">
+          <div class="chat-welcome">
+            <div class="chat-welcome-av">AG</div>
+            <h2 class="chat-welcome-title">Ask me about Ashutosh</h2>
+            <p class="chat-welcome-sub">I know everything about his cybersecurity background, projects, homelab, and experience. Try a question or pick a suggestion below.</p>
+          </div>
+          <div class="chat-chips">
+            <button class="chip" onclick="onChip(this)">What makes him stand out?</button>
+            <button class="chip" onclick="onChip(this)">Tell me about his homelab</button>
+            <button class="chip" onclick="onChip(this)">What is CyberVantage?</button>
+            <button class="chip" onclick="onChip(this)">Available to hire?</button>
+            <button class="chip" onclick="onChip(this)">What certs does he hold?</button>
+          </div>
+          <a href="#about" class="chat-explore">Explore portfolio ↓</a>
+        </div>
+
+        <!-- Conversation Messages -->
+        <div class="chat-messages" id="chat-messages"></div>
+
+      </div>
+
+      <!-- Sticky Input Dock -->
+      <div class="chat-input-dock">
+        <div class="chat-input-wrap">
+          <textarea id="chat-input" rows="1" placeholder="Ask me anything about Ashutosh…"
+            onkeydown="onKey(event)" oninput="grow(this)" aria-label="Chat input"></textarea>
+          <button class="chat-send" id="chat-send" onclick="send()" aria-label="Send">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path d="M3 10l14-7-7 14V10H3z"/></svg>
+          </button>
+        </div>
+        <div class="chat-dock-meta">
+          <span class="mono-tag">Gemini 1.5 Flash · Secure API proxy</span>
+          <span class="chat-live-badge"><span class="status-dot small"></span><span class="mono-tag">Live</span></span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Portfolio Sections -->
+    <main class="portfolio">
 
       <section class="panel" id="about">
         <div class="hero-block">
@@ -119,7 +154,7 @@
         <div id="exp-container"></div>
         <div class="panel-header" style="margin-top:52px">
           <span class="panel-num mono-tag">04</span>
-          <h2 class="panel-title">Leadership & Volunteering</h2>
+          <h2 class="panel-title">Leadership &amp; Volunteering</h2>
         </div>
         <div id="vol-container"></div>
       </section>
@@ -134,44 +169,6 @@
       </section>
 
     </main>
-
-    <aside class="chat-panel" aria-label="AI assistant">
-      <div class="chat-top">
-        <div class="chat-identity">
-          <div class="chat-avatar">🤖</div>
-          <div class="chat-meta">
-            <div class="chat-name">Ask about Ashutosh</div>
-            <div class="chat-sub mono-tag">Gemini · Secure proxy</div>
-          </div>
-        </div>
-        <div class="chat-live">
-          <span class="status-dot small"></span>
-          <span class="mono-tag">Live</span>
-        </div>
-      </div>
-      <div class="chat-chips">
-        <button class="chip" onclick="onChip(this)">What makes him stand out?</button>
-        <button class="chip" onclick="onChip(this)">Tell me about his homelab</button>
-        <button class="chip" onclick="onChip(this)">What is CyberVantage?</button>
-        <button class="chip" onclick="onChip(this)">Available to hire?</button>
-        <button class="chip" onclick="onChip(this)">What certs does he hold?</button>
-      </div>
-      <div class="chat-messages" id="chat-messages">
-        <div class="chat-msg bot">
-          <div class="chat-msg-av">🤖</div>
-          <div class="chat-bubble">
-            Hey! 👋 I know everything about Ashutosh's cybersecurity background — his homelab, projects, skills, and experience. What would you like to know?
-          </div>
-        </div>
-      </div>
-      <div class="chat-compose">
-        <textarea id="chat-input" rows="1" placeholder="Ask me anything…"
-          onkeydown="onKey(event)" oninput="grow(this)" aria-label="Chat input"></textarea>
-        <button class="chat-send" id="chat-send" onclick="send()" aria-label="Send">
-          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M3 10l14-7-7 14V10H3z"/></svg>
-        </button>
-      </div>
-    </aside>
 
   </div>
 

@@ -17,6 +17,7 @@ let busy    = false;
   document.getElementById("app").classList.add("ready");
   document.getElementById("app").removeAttribute("aria-busy");
   initScrollSpy();
+  initNavbarScroll();
 })();
 
 function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
@@ -148,79 +149,104 @@ function renderContact(p) {
 
 function initScrollSpy() {
   const panels = document.querySelectorAll(".panel");
-  const items  = document.querySelectorAll(".nav-item");
-  new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        items.forEach(i => i.classList.remove("active"));
-        const a = document.querySelector(`.nav-item[data-target="${e.target.id}"]`);
+  const links  = document.querySelectorAll(".nav-link[data-target]");
+  panels.forEach(panel => {
+    new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) {
+        links.forEach(l => l.classList.remove("active"));
+        const a = document.querySelector(`.nav-link[data-target="${entries[0].target.id}"]`);
         if (a) a.classList.add("active");
       }
-    });
-  }, { rootMargin:"-35% 0px -55% 0px" }).observe.call({ observe: p => panels.forEach(p => {}) });
-  panels.forEach(p => new IntersectionObserver(entries => {
-    if (entries[0].isIntersecting) {
-      items.forEach(i => i.classList.remove("active"));
-      const a = document.querySelector(`.nav-item[data-target="${entries[0].target.id}"]`);
-      if (a) a.classList.add("active");
-    }
-  }, { rootMargin:"-35% 0px -55% 0px" }).observe(p));
+    }, { rootMargin: "-30% 0px -60% 0px" }).observe(panel);
+  });
 }
 
-function grow(el) { el.style.height="auto"; el.style.height=Math.min(el.scrollHeight,90)+"px"; }
-function onKey(e) { if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();} }
-function onChip(btn) { document.getElementById("chat-input").value=btn.textContent; send(); }
+function initNavbarScroll() {
+  const navbar = document.getElementById("navbar");
+  window.addEventListener("scroll", () => {
+    navbar.classList.toggle("scrolled", window.scrollY > 20);
+  }, { passive: true });
+}
+
+/* ── Chat ── */
+
+function grow(el) { el.style.height = "auto"; el.style.height = Math.min(el.scrollHeight, 100) + "px"; }
+function onKey(e) { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }
+function onChip(btn) { document.getElementById("chat-input").value = btn.textContent; send(); }
 
 function appendMsg(role, text) {
-  const box=document.getElementById("chat-messages");
-  const d=document.createElement("div"); d.className=`chat-msg ${role}`;
-  d.innerHTML=`<div class="chat-msg-av">${role==="bot"?"🤖":"🧑"}</div><div class="chat-bubble">${esc(text).replace(/\n/g,"<br>")}</div>`;
-  box.appendChild(d); box.scrollTop=box.scrollHeight;
+  // Transition from welcome state to chat on first message
+  const empty = document.getElementById("chat-empty");
+  if (empty && !empty.hidden) empty.hidden = true;
+
+  const box = document.getElementById("chat-messages");
+  const d = document.createElement("div");
+  d.className = `chat-msg ${role}`;
+
+  if (role === "bot") {
+    d.innerHTML = `<div class="chat-msg-av">AG</div><div class="chat-bubble">${esc(text).replace(/\n/g,"<br>")}</div>`;
+  } else {
+    d.innerHTML = `<div class="chat-bubble">${esc(text).replace(/\n/g,"<br>")}</div>`;
+  }
+
+  box.appendChild(d);
+  const scrollArea = document.getElementById("chat-scroll-area");
+  scrollArea.scrollTop = scrollArea.scrollHeight;
 }
+
 function showTyping() {
-  const box=document.getElementById("chat-messages");
-  const d=document.createElement("div"); d.id="typing-el"; d.className="chat-msg bot";
-  d.innerHTML=`<div class="chat-msg-av">🤖</div><div class="chat-bubble typing"><span></span><span></span><span></span></div>`;
-  box.appendChild(d); box.scrollTop=box.scrollHeight;
+  const box = document.getElementById("chat-messages");
+  const d = document.createElement("div");
+  d.id = "typing-el"; d.className = "chat-msg bot";
+  d.innerHTML = `<div class="chat-msg-av">AG</div><div class="chat-bubble typing"><span></span><span></span><span></span></div>`;
+  box.appendChild(d);
+  const scrollArea = document.getElementById("chat-scroll-area");
+  scrollArea.scrollTop = scrollArea.scrollHeight;
 }
 function hideTyping() { document.getElementById("typing-el")?.remove(); }
 
 async function send() {
-  const inp=document.getElementById("chat-input"), btn=document.getElementById("chat-send");
-  const txt=inp.value.trim();
-  if(!txt||busy) return;
-  inp.value=""; inp.style.height="auto"; busy=true; btn.disabled=true;
-  appendMsg("user",txt);
-  history.push({role:"user",parts:[{text:txt}]});
+  const inp = document.getElementById("chat-input");
+  const btn = document.getElementById("chat-send");
+  const txt = inp.value.trim();
+  if (!txt || busy) return;
+  inp.value = ""; inp.style.height = "auto"; busy = true; btn.disabled = true;
+  appendMsg("user", txt);
+  history.push({ role: "user", parts: [{ text: txt }] });
   showTyping();
   try {
     let reply;
-    if(LOCAL_DEV) {
-      const sys=buildLocalSystemPrompt();
-      const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${LOCAL_GEMINI_KEY}`,
-        {method:"POST",headers:{"Content-Type":"application/json"},
-         body:JSON.stringify({contents:[{role:"user",parts:[{text:sys+"\n\nAcknowledge briefly."}]},{role:"model",parts:[{text:"Understood."}]},...history],generationConfig:{temperature:0.75,maxOutputTokens:512}})});
-      const d=await r.json();
-      if(d.error) throw new Error(d.error.message);
-      reply=d.candidates?.[0]?.content?.parts?.[0]?.text??"No response.";
+    if (LOCAL_DEV) {
+      const sys = buildLocalSystemPrompt();
+      const r = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${LOCAL_GEMINI_KEY}`,
+        { method:"POST", headers:{"Content-Type":"application/json"},
+          body: JSON.stringify({ contents:[{role:"user",parts:[{text:sys+"\n\nAcknowledge briefly."}]},{role:"model",parts:[{text:"Understood."}]},...history], generationConfig:{temperature:0.75,maxOutputTokens:512} }) }
+      );
+      const d = await r.json();
+      if (d.error) throw new Error(d.error.message);
+      reply = d.candidates?.[0]?.content?.parts?.[0]?.text ?? "No response.";
     } else {
-      const r=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages:history})});
-      const d=await r.json();
-      if(d.error) throw new Error(d.error);
-      reply=d.reply;
+      const r = await fetch("/api/chat", { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ messages: history }) });
+      const d = await r.json();
+      if (d.error) throw new Error(d.error);
+      reply = d.reply;
     }
-    history.push({role:"model",parts:[{text:reply}]});
-    hideTyping(); appendMsg("bot",reply);
-  } catch(err) { hideTyping(); appendMsg("bot",`⚠️ ${err.message||"Could not connect."}`); }
-  busy=false; btn.disabled=false; document.getElementById("chat-input").focus();
+    history.push({ role: "model", parts: [{ text: reply }] });
+    hideTyping(); appendMsg("bot", reply);
+  } catch (err) {
+    hideTyping(); appendMsg("bot", `⚠️ ${err.message || "Could not connect."}`);
+  }
+  busy = false; btn.disabled = false;
+  document.getElementById("chat-input").focus();
 }
 
 function buildLocalSystemPrompt() {
-  if(!profile) return "You are a helpful assistant.";
-  const p=profile;
-  const sk=Object.entries(p.skills).map(([c,g])=>`${c}: ${g.items.join(", ")}`).join("\n");
-  const pr=p.projects.map((x,i)=>`${i+1}. ${x.name}${x.award?" ["+x.award+"]":""}(${x.status}): ${x.description}`).join("\n");
-  const ex=p.experience.map(e=>`- ${e.role} @ ${e.company} (${e.period})`).join("\n");
+  if (!profile) return "You are a helpful assistant.";
+  const p = profile;
+  const sk = Object.entries(p.skills).map(([c,g])=>`${c}: ${g.items.join(", ")}`).join("\n");
+  const pr = p.projects.map((x,i)=>`${i+1}. ${x.name}${x.award?" ["+x.award+"]":""}(${x.status}): ${x.description}`).join("\n");
+  const ex = p.experience.map(e=>`- ${e.role} @ ${e.company} (${e.period})`).join("\n");
   return `You are a professional AI assistant on ${p.name}'s cybersecurity portfolio. Answer questions warmly and concisely (2-4 sentences). Highlight: the homelab (physical Intel NUC dual-NIC firewall + Mac Mini M4 + SIEM/SOAR — very rare for a graduate), CyberVantage live at cybervantage.tech (award-winning). Refer to him in third person. If unsure, invite them to email ${p.email}.
 Name:${p.name}|Title:${p.title}|Location:${p.location}|Graduated:${p.education.institution}
 Availability:${p.availability}
@@ -230,9 +256,9 @@ Projects:\n${pr}
 Experience:\n${ex}`;
 }
 
-function setHTML(id, html) { const el=document.getElementById(id); if(el) el.innerHTML=html; }
+function setHTML(id, html) { const el = document.getElementById(id); if (el) el.innerHTML = html; }
 function esc(str) {
-  if(!str) return "";
+  if (!str) return "";
   return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
 }
 
