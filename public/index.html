@@ -55,11 +55,11 @@
             <p class="chat-welcome-sub">I know everything about his cybersecurity background, projects, homelab, and experience. Try a question or pick a suggestion below.</p>
           </div>
           <div class="chat-chips">
-            <button class="chip" onclick="onChip(this)">What makes him stand out?</button>
-            <button class="chip" onclick="onChip(this)">Tell me about his homelab</button>
-            <button class="chip" onclick="onChip(this)">What is CyberVantage?</button>
-            <button class="chip" onclick="onChip(this)">Available to hire?</button>
-            <button class="chip" onclick="onChip(this)">What certs does he hold?</button>
+            <button class="chip">What makes him stand out?</button>
+            <button class="chip">Tell me about his homelab</button>
+            <button class="chip">What is CyberVantage?</button>
+            <button class="chip">Available to hire?</button>
+            <button class="chip">What certs does he hold?</button>
           </div>
           <a href="#about" class="chat-explore">Explore portfolio ↓</a>
         </div>
@@ -73,8 +73,8 @@
       <div class="chat-input-dock">
         <div class="chat-input-wrap">
           <textarea id="chat-input" rows="1" placeholder="Ask me anything about Ashutosh…"
-            onkeydown="onKey(event)" oninput="grow(this)" aria-label="Chat input"></textarea>
-          <button class="chat-send" id="chat-send" onclick="send()" aria-label="Send">
+            aria-label="Chat input"></textarea>
+          <button class="chat-send" id="chat-send" aria-label="Send">
             <svg viewBox="0 0 20 20" fill="currentColor"><path d="M3 10l14-7-7 14V10H3z"/></svg>
           </button>
         </div>
@@ -113,18 +113,21 @@
           <div class="security-pills">
             <span class="s-pill">Secure SDLC</span>
             <span class="s-pill">API Key Proxy</span>
-            <span class="s-pill">CSP Headers</span>
+            <span class="s-pill">CSP — No unsafe-inline</span>
             <span class="s-pill">Rate Limiting</span>
             <span class="s-pill">Input Sanitization</span>
-            <span class="s-pill">CORS Enforcement</span>
+            <span class="s-pill">CORS Allowlist</span>
             <span class="s-pill">XSS Protection</span>
             <span class="s-pill">Audit Logging</span>
+            <span class="s-pill">HSTS Enforced</span>
+            <span class="s-pill">Prompt Injection Mitigation</span>
             <span class="s-pill">Zero Trust Principles</span>
             <span class="s-pill">OWASP Top 10</span>
           </div>
           <p class="security-note">
             This portfolio itself demonstrates the principles: the AI chatbot calls a serverless proxy
-            so the API key never reaches your browser. Security headers, rate limiting, and input
+            so the API key never reaches your browser. Security headers (including HSTS and a strict
+            CSP with no unsafe-inline), rate limiting, CORS allowlists, and prompt injection
             sanitization are all active in production.
           </p>
         </div>

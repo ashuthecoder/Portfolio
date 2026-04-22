@@ -18,6 +18,7 @@ let busy    = false;
   document.getElementById("app").removeAttribute("aria-busy");
   initScrollSpy();
   initNavbarScroll();
+  initChat();
 })();
 
 function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
@@ -166,6 +167,19 @@ function initNavbarScroll() {
   window.addEventListener("scroll", () => {
     navbar.classList.toggle("scrolled", window.scrollY > 20);
   }, { passive: true });
+}
+
+// Attach all chat event listeners programmatically so the HTML has no inline handlers.
+// This lets the CSP use script-src 'self' without 'unsafe-inline', which is stricter.
+function initChat() {
+  const input   = document.getElementById("chat-input");
+  const sendBtn = document.getElementById("chat-send");
+  sendBtn.addEventListener("click", send);
+  input.addEventListener("keydown", onKey);
+  input.addEventListener("input", () => grow(input));
+  document.querySelectorAll(".chip").forEach(btn => {
+    btn.addEventListener("click", () => onChip(btn));
+  });
 }
 
 /* ── Chat ── */

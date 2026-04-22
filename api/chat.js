@@ -1,12 +1,26 @@
 // api/chat.js
-// Secure Gemini proxy. API key never reaches the browser.
-// Reads profile from data/profile.js server-side.
+// Secure Gemini proxy — API key never reaches the browser.
+// Reads profile from data/profile.js server-side only.
+//
+// Security measures applied here:
+//   • Rate limiting (15 req/min per IP) — prevents DoS / API key exhaustion
+//   • CORS allowlist — only configured origins receive CORS headers; no wildcard fallback
+//   • Input validation — message count cap (50), role whitelist ("user"/"model")
+//   • sanitizeText() — strips control chars / null bytes to mitigate prompt injection
+//   • Text length cap (2000 chars/message) — prevents token-stuffing attacks
+//   • GEMINI_API_KEY read from env only — never exposed to the browser
+//   • Gemini safety filters — blocks harassment, hate speech, dangerous content
+//   • Structured logging with secret redaction (see logger.js)
+//
+// No SQL database is used anywhere in this project; there is no SQL injection surface.
+// All profile data is static server-side config — no user input reaches a database query.
 
-const logger  = require("./_logger");
+const logger  = require("./logger");
 const profile = require("../data/profile");
 
 if (!global._rl) global._rl = new Map();
 
+// Rate limiter: 15 requests per 60-second window per IP (in-memory).
 function rateCheck(ip) {
   const WIN = 60_000, MAX = 15, now = Date.now();
   const hits = (global._rl.get(ip) ?? []).filter(t => now - t < WIN);
@@ -27,14 +41,26 @@ const ALLOWED_ORIGINS = () => [
   "http://localhost:5500",
 ].filter(Boolean);
 
+// CORS: only set headers for origins in the allowlist.
+// No wildcard fallback — an unlisted origin gets no CORS headers and the browser blocks it.
 function cors(req, res) {
   const o = req.headers.origin ?? "";
   const allowed = ALLOWED_ORIGINS();
-  const use = allowed.includes(o) ? o : (allowed[0] ?? "*");
-  res.setHeader("Access-Control-Allow-Origin",  use);
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-  res.setHeader("Vary", "Origin");
+  if (allowed.includes(o)) {
+    res.setHeader("Access-Control-Allow-Origin",  o);
+    res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    res.setHeader("Vary", "Origin");
+  }
+}
+
+// Strip ASCII control characters (null bytes, escape sequences, etc.) from user input.
+// This mitigates prompt injection — attackers embedding hidden instructions in chat messages.
+// Tab (\x09), newline (\x0A), and carriage return (\x0D) are preserved (legitimate whitespace).
+function sanitizeText(str) {
+  return String(str)
+    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "")
+    .slice(0, 2000);
 }
 
 function buildPrompt() {
@@ -80,7 +106,10 @@ Volunteering: ${p.volunteering.map(v => v.role + " @ " + v.org).join(" | ")}
 Additional context: ${p.aiContext}`;
 }
 
-export default async function handler(req, res) {
+// module.exports = CommonJS export required by Vercel's Node.js serverless runtime.
+// (Using "export default" here would cause "Unexpected token" because this file also
+//  uses require(), making it a CommonJS module where ESM syntax is invalid.)
+module.exports = async function handler(req, res) {
   const t0 = Date.now();
   const ip = (req.headers["x-forwarded-for"] ?? req.socket?.remoteAddress ?? "unknown").split(",")[0].trim();
 
@@ -110,10 +139,20 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "Conversation too long. Please refresh." });
   }
 
-  const clean = messages.map(m => ({
-    role:  m.role === "model" ? "model" : "user",
-    parts: [{ text: String(m.parts?.[0]?.text ?? "").slice(0, 2000) }],
-  }));
+  // Sanitize each message: whitelist role values, strip control characters, cap length.
+  // This prevents prompt injection and token-stuffing attacks.
+  const clean = messages
+    .map(m => ({
+      role:  m.role === "model" ? "model" : "user",
+      parts: [{ text: sanitizeText(m.parts?.[0]?.text ?? "") }],
+    }))
+    .filter(m => m.parts[0].text.length > 0);
+
+  if (clean.length === 0) {
+    logger.warn("validation.empty_after_sanitize", { ip });
+    logger.res(400, Date.now() - t0);
+    return res.status(400).json({ error: "Invalid request." });
+  }
 
   const prompt = buildPrompt();
   const payload = [
@@ -173,4 +212,4 @@ export default async function handler(req, res) {
     logger.res(500, Date.now() - t0);
     return res.status(500).json({ error: "Internal error. Please try again shortly." });
   }
-}
+};

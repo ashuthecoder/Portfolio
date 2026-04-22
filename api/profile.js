@@ -1,8 +1,13 @@
 // api/profile.js
 // Serves safe public profile data to the browser.
-// Strips aiContext — that field never leaves the server.
+//
+// Security measures applied here:
+//   • aiContext field stripped before response — recruiter coaching notes never reach the browser
+//   • CORS allowlist — only configured origins receive CORS headers; no wildcard fallback
+//   • Cache-Control headers — reduces load; no user data is cached (profile is public-read-only)
+//   • module.exports (CommonJS) — avoids ESM/CJS mismatch that would cause "Unexpected token"
 
-const logger  = require("./_logger");
+const logger  = require("./logger");
 const profile = require("../data/profile");
 
 const ALLOWED_ORIGINS = () => [
@@ -12,14 +17,17 @@ const ALLOWED_ORIGINS = () => [
   "http://localhost:5500",
 ].filter(Boolean);
 
-export default function handler(req, res) {
+module.exports = function handler(req, res) {
   const t0     = Date.now();
   const origin = req.headers.origin ?? "";
   const allowed = ALLOWED_ORIGINS();
-  const use = allowed.includes(origin) ? origin : (allowed[0] ?? "*");
 
-  res.setHeader("Access-Control-Allow-Origin",  use);
-  res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+  // Only set CORS headers for allowed origins — no wildcard fallback.
+  if (allowed.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin",  origin);
+    res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+    res.setHeader("Vary", "Origin");
+  }
   res.setHeader("Cache-Control", "public, max-age=300, stale-while-revalidate=60");
 
   if (req.method === "OPTIONS") return res.status(204).end();
@@ -29,8 +37,10 @@ export default function handler(req, res) {
     ip: (req.headers["x-forwarded-for"] ?? "unknown").split(",")[0].trim(),
   });
 
+  // Destructure aiContext out — it contains recruiter coaching notes and must never
+  // be sent to the browser. Everything else in the profile is safe to expose publicly.
   const { aiContext, ...safe } = profile;
 
   logger.res(200, Date.now() - t0, { event: "profile.served" });
   return res.status(200).json(safe);
-}
+};
