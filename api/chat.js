@@ -170,7 +170,9 @@ module.exports = async function handler(req, res) {
   try {
     logger.info("gemini.call", { ip, turns: clean.length });
     const gr = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      // Model name is overridable via GEMINI_MODEL env var so you can swap models
+      // without a code change when Google deprecates one (1.5-flash was retired in 2025).
+      `https://generativelanguage.googleapis.com/v1beta/models/${process.env.GEMINI_MODEL || "gemini-2.5-flash"}:generateContent?key=${process.env.GEMINI_API_KEY}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
