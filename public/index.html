@@ -102,6 +102,20 @@
               <button class="chip">What certs does he hold?</button>
               <button class="chip">Offensive security skills?</button>
             </div>
+            <!-- CAPTCHA — hidden once solved -->
+            <div class="chat-captcha" id="chat-captcha">
+              <div class="captcha-card">
+                <span class="captcha-lock">🔐</span>
+                <span class="captcha-label">Quick check:</span>
+                <span class="captcha-q" id="captcha-q">…</span>
+                <span class="captcha-eq">=</span>
+                <input class="captcha-input" id="captcha-input" type="number" min="1" max="24" placeholder="?" autocomplete="off" aria-label="Captcha answer"/>
+                <button class="captcha-btn" id="captcha-btn">Verify ↵</button>
+              </div>
+              <span class="captcha-hint">One-time bot check · HMAC-signed · server-validated</span>
+              <span class="captcha-error" id="captcha-error" hidden></span>
+            </div>
+
             <a href="#about" class="chat-explore">Explore portfolio ↓</a>
           </div>
           <div class="chat-messages" id="chat-messages"></div>

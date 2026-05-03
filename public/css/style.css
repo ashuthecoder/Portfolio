@@ -545,6 +545,54 @@ body::after {
 }
 
 /* ══════════════════════════════════════════════
+   CAPTCHA
+   ══════════════════════════════════════════════ */
+.chat-captcha {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  animation: rise 0.3s ease;
+}
+.captcha-card {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center;
+  background: var(--bg1); border: 1px solid var(--a-border);
+  border-radius: var(--r-lg); padding: 12px 18px;
+  font-family: var(--mono); font-size: 12px;
+}
+.captcha-lock { font-size: 15px; }
+.captcha-label { color: var(--tx3); font-size: 10px; letter-spacing: 0.5px; }
+.captcha-q { color: var(--a); font-size: 13px; font-weight: 500; letter-spacing: 0.5px; }
+.captcha-eq { color: var(--tx3); }
+.captcha-input {
+  width: 56px; background: var(--bg2); border: 1px solid var(--line2);
+  border-radius: var(--r-sm); color: var(--tx); font-family: var(--mono);
+  font-size: 13px; text-align: center; padding: 5px 8px; outline: none;
+  transition: border-color 0.2s;
+}
+.captcha-input:focus { border-color: var(--a-border); }
+.captcha-input::-webkit-inner-spin-button,
+.captcha-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+.captcha-btn {
+  background: var(--a); color: #000; border: none; border-radius: var(--r-sm);
+  font-family: var(--mono); font-size: 10.5px; font-weight: 500;
+  padding: 6px 14px; cursor: pointer; transition: opacity 0.18s;
+  letter-spacing: 0.3px;
+}
+.captcha-btn:hover { opacity: 0.85; }
+.captcha-hint { font-family: var(--mono); font-size: 9.5px; color: var(--tx3); letter-spacing: 0.3px; }
+.captcha-error { font-family: var(--mono); font-size: 10px; color: var(--r); }
+.chat-captcha.solved { display: none; }
+
+/* ── Chat input disabled state (before captcha solved) ── */
+#chat-input:disabled { cursor: not-allowed; opacity: 0.4; }
+.chat-send:disabled { opacity: 0.2; cursor: not-allowed; }
+.chat-input-wrap.locked { border-color: var(--line); }
+.chat-input-wrap.locked::after {
+  content: 'Solve the verification above to chat';
+  font-family: var(--mono); font-size: 9.5px; color: var(--tx3);
+  position: absolute; bottom: -20px; left: 4px;
+}
+.chat-input-wrap { position: relative; }
+
+/* ══════════════════════════════════════════════
    RESPONSIVE
    ══════════════════════════════════════════════ */
 @media (max-width: 900px) {

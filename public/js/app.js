@@ -4,9 +4,12 @@
 const LOCAL_DEV        = false;
 const LOCAL_GEMINI_KEY = "PASTE_YOUR_GEMINI_KEY_HERE";
 
-let profile = null;
-let history = [];
-let busy    = false;
+let profile       = null;
+let history       = [];
+let busy          = false;
+let captchaToken  = null;
+let captchaAnswer = null;
+let captchaDone   = false; // true once solved or skipped
 
 // Inline SVG icons for sidebar links
 const IC_EMAIL    = `<svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="3" width="14" height="10" rx="1.5"/><path d="M1 3l7 6 7-6"/></svg>`;
@@ -24,6 +27,7 @@ const IC_WEB      = `<svg width="12" height="12" viewBox="0 0 16 16" fill="none"
   initScrollSpy();
   initMobileMenu();
   initChat();
+  fetchChallenge(); // non-blocking — runs in background
 })();
 
 function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
@@ -219,6 +223,71 @@ function initMobileMenu() {
   });
 }
 
+/* ── CAPTCHA ── */
+
+async function fetchChallenge() {
+  try {
+    const r = await fetch("/api/challenge");
+    if (!r.ok) throw new Error("no challenge");
+    const { q, token } = await r.json();
+    captchaToken = token;
+    setHTML("captcha-q", esc(q));
+  } catch {
+    // Challenge endpoint unavailable (e.g. local dev without Vercel CLI).
+    // Skip captcha gracefully — server also won't enforce if CHALLENGE_SECRET isn't set.
+    skipCaptcha();
+  }
+}
+
+function skipCaptcha() {
+  captchaDone = true;
+  document.getElementById("chat-captcha")?.classList.add("solved");
+  enableChatInput();
+}
+
+function enableChatInput() {
+  const inp = document.getElementById("chat-input");
+  const btn = document.getElementById("chat-send");
+  const wrap = document.querySelector(".chat-input-wrap");
+  if (inp) inp.disabled = false;
+  if (btn) btn.disabled = false;
+  wrap?.classList.remove("locked");
+}
+
+function initCaptcha() {
+  const btn   = document.getElementById("captcha-btn");
+  const input = document.getElementById("captcha-input");
+  // Disable chat input until captcha is solved
+  const chatInput = document.getElementById("chat-input");
+  const chatSend  = document.getElementById("chat-send");
+  const wrap = document.querySelector(".chat-input-wrap");
+  if (chatInput) chatInput.disabled = true;
+  if (chatSend)  chatSend.disabled  = true;
+  wrap?.classList.add("locked");
+
+  btn?.addEventListener("click",  submitCaptcha);
+  input?.addEventListener("keydown", e => { if (e.key === "Enter") submitCaptcha(); });
+}
+
+function submitCaptcha() {
+  const input = document.getElementById("captcha-input");
+  const errEl = document.getElementById("captcha-error");
+  const val   = (input?.value ?? "").trim();
+
+  if (!val || !/^\d+$/.test(val)) {
+    errEl.textContent = "Please enter a whole number.";
+    errEl.hidden = false;
+    return;
+  }
+
+  errEl.hidden = true;
+  captchaAnswer = val;
+  captchaDone   = true;
+  document.getElementById("chat-captcha")?.classList.add("solved");
+  enableChatInput();
+  document.getElementById("chat-input")?.focus();
+}
+
 function initChat() {
   const input   = document.getElementById("chat-input");
   const sendBtn = document.getElementById("chat-send");
@@ -228,6 +297,7 @@ function initChat() {
   document.querySelectorAll(".chip").forEach(btn => {
     btn.addEventListener("click", () => onChip(btn));
   });
+  initCaptcha();
 }
 
 /* ── Chat ── */
@@ -285,7 +355,12 @@ async function send() {
       if (d.error) throw new Error(d.error.message);
       reply = d.candidates?.[0]?.content?.parts?.[0]?.text ?? "No response.";
     } else {
-      const r = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ messages: history }) });
+      const body = { messages: history };
+      // Include captcha token+answer with the first message only
+      if (history.length === 1 && captchaToken && captchaAnswer) {
+        body.captcha = { token: captchaToken, answer: captchaAnswer };
+      }
+      const r = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
       const d = await r.json();
       if (d.error) throw new Error(d.error);
       reply = d.reply;
