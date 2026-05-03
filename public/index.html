@@ -23,73 +23,107 @@
 
   <div id="app" class="app" aria-busy="true">
 
-    <!-- Top Navigation -->
-    <nav class="navbar" id="navbar">
-      <a href="#home" class="nav-logo">AG</a>
-      <div class="nav-links">
-        <a href="#about"      class="nav-link" data-target="about">About</a>
-        <a href="#skills"     class="nav-link" data-target="skills">Skills</a>
-        <a href="#projects"   class="nav-link" data-target="projects">Projects</a>
-        <a href="#experience" class="nav-link" data-target="experience">Experience</a>
-        <a href="#contact"    class="nav-link" data-target="contact">Contact</a>
-      </div>
-      <div class="nav-actions">
-        <span class="nav-status">
-          <span class="status-dot small"></span>
-          <span class="nav-status-text mono-tag">Open to Work</span>
-        </span>
-        <a href="/resume.pdf" class="btn btn-outline" target="_blank" rel="noopener">Resume ↗</a>
-      </div>
-    </nav>
+    <!-- Mobile sidebar overlay -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
-    <!-- Chat Landing Page -->
-    <section class="chat-section" id="home">
+    <!-- ═══════════════════════════════ SIDEBAR ═══════════════════════════════ -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-inner">
 
-      <div class="chat-scroll-area" id="chat-scroll-area">
-
-        <!-- Welcome / Empty State -->
-        <div class="chat-empty" id="chat-empty">
-          <div class="chat-welcome">
-            <div class="chat-welcome-av">AG</div>
-            <h2 class="chat-welcome-title">Ask me about Ashutosh</h2>
-            <p class="chat-welcome-sub">I know everything about his cybersecurity background, projects, homelab, and experience. Try a question or pick a suggestion below.</p>
+        <div class="sb-identity">
+          <div class="sb-avatar">AG</div>
+          <div class="sb-name" id="sb-name">Loading…</div>
+          <div id="sb-title"></div>
+          <div class="sb-status">
+            <span class="status-dot small"></span>
+            <span class="sb-status-text">Open to Work</span>
           </div>
-          <div class="chat-chips">
-            <button class="chip">What makes him stand out?</button>
-            <button class="chip">Tell me about his homelab</button>
-            <button class="chip">What is CyberVantage?</button>
-            <button class="chip">Available to hire?</button>
-            <button class="chip">What certs does he hold?</button>
+        </div>
+
+        <nav class="sb-nav" id="sb-nav">
+          <a href="#chat"       class="snav-link active" data-target="chat">      <span class="snav-prefix">//</span> chat with AI</a>
+          <a href="#about"      class="snav-link"        data-target="about">     <span class="snav-prefix">//</span> about</a>
+          <a href="#skills"     class="snav-link"        data-target="skills">    <span class="snav-prefix">//</span> skills</a>
+          <a href="#projects"   class="snav-link"        data-target="projects">  <span class="snav-prefix">//</span> projects</a>
+          <a href="#experience" class="snav-link"        data-target="experience"><span class="snav-prefix">//</span> experience</a>
+          <a href="#contact"    class="snav-link"        data-target="contact">   <span class="snav-prefix">//</span> contact</a>
+        </nav>
+
+        <div class="sb-links" id="sb-links"></div>
+
+        <a href="/resume.pdf" class="sb-resume" target="_blank" rel="noopener">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2h7l3 3v9H3V2z"/><path d="M10 2v3h3"/><path d="M6 7h4M6 10h4M6 13h2"/></svg>
+          Resume PDF
+          <span class="sb-resume-arrow">↗</span>
+        </a>
+
+        <div class="sb-security">
+          <div class="sb-security-label">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" width="11" height="11"><path d="M8 1L2 4v4c0 3.5 2.7 6.8 6 8 3.3-1.2 6-4.5 6-8V4L8 1z"/></svg>
+            Security Posture
           </div>
-          <a href="#about" class="chat-explore">Explore portfolio ↓</a>
+          <div class="sb-sec-pills">
+            <span class="sb-sec-pill">NIST CSF</span>
+            <span class="sb-sec-pill">ISO 27001</span>
+            <span class="sb-sec-pill">OWASP Top 10</span>
+            <span class="sb-sec-pill">Essential Eight</span>
+          </div>
         </div>
-
-        <!-- Conversation Messages -->
-        <div class="chat-messages" id="chat-messages"></div>
 
       </div>
+    </aside>
 
-      <!-- Sticky Input Dock -->
-      <div class="chat-input-dock">
-        <div class="chat-input-wrap">
-          <textarea id="chat-input" rows="1" placeholder="Ask me anything about Ashutosh…"
-            aria-label="Chat input"></textarea>
-          <button class="chat-send" id="chat-send" aria-label="Send">
-            <svg viewBox="0 0 20 20" fill="currentColor"><path d="M3 10l14-7-7 14V10H3z"/></svg>
-          </button>
-        </div>
-        <div class="chat-dock-meta">
-          <span class="mono-tag">Gemini 2.5 Flash · Secure API proxy</span>
-          <span class="chat-live-badge"><span class="status-dot small"></span><span class="mono-tag">Live</span></span>
-        </div>
+    <!-- ═══════════════════════════ MAIN CONTENT ═══════════════════════════ -->
+    <div class="main-wrap">
+
+      <!-- Mobile top bar -->
+      <div class="mobile-bar" id="mobile-bar">
+        <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+        <span class="mobile-logo">AG</span>
+        <a href="/resume.pdf" class="btn btn-outline btn-xs" target="_blank" rel="noopener">Resume</a>
       </div>
 
-    </section>
+      <!-- ─── CHAT ─── -->
+      <section class="panel chat-panel" id="chat">
+        <div class="chat-scroll-area" id="chat-scroll-area">
+          <div class="chat-empty" id="chat-empty">
+            <div class="chat-welcome">
+              <div class="chat-welcome-av">AG</div>
+              <h2 class="chat-welcome-title">Ask me anything about Ashutosh</h2>
+              <p class="chat-welcome-sub">I'm an AI with full knowledge of his cybersecurity background, homelab, projects, and experience. Try a suggestion or type your own question.</p>
+            </div>
+            <div class="chat-chips">
+              <button class="chip">What makes him stand out?</button>
+              <button class="chip">Tell me about his homelab</button>
+              <button class="chip">What is CyberVantage?</button>
+              <button class="chip">Available to hire?</button>
+              <button class="chip">What certs does he hold?</button>
+              <button class="chip">Offensive security skills?</button>
+            </div>
+            <a href="#about" class="chat-explore">Explore portfolio ↓</a>
+          </div>
+          <div class="chat-messages" id="chat-messages"></div>
+        </div>
+        <div class="chat-input-dock">
+          <div class="chat-input-wrap">
+            <textarea id="chat-input" rows="1" placeholder="Ask me anything about Ashutosh…" aria-label="Chat input"></textarea>
+            <button class="chat-send" id="chat-send" aria-label="Send">
+              <svg viewBox="0 0 20 20" fill="currentColor"><path d="M3 10l14-7-7 14V10H3z"/></svg>
+            </button>
+          </div>
+          <div class="chat-dock-meta">
+            <span class="mono-tag">Gemini 2.5 Flash · Secure API proxy · No data stored</span>
+            <span class="chat-live-badge"><span class="status-dot small"></span><span class="mono-tag">Live</span></span>
+          </div>
+        </div>
+      </section>
 
-    <!-- Portfolio Sections -->
-    <main class="portfolio">
-
+      <!-- ─── ABOUT ─── -->
       <section class="panel" id="about">
+        <div class="section-label"><span class="mono-tag">// 00 — about</span></div>
+
         <div class="hero-block">
           <div class="hero-tags"    id="hero-tags"></div>
           <h1 class="hero-name"     id="hero-name">Loading…</h1>
@@ -97,83 +131,116 @@
           <p class="hero-summary"   id="hero-summary"></p>
           <div class="hero-actions" id="hero-actions"></div>
         </div>
+
         <div class="passion-block">
           <div class="passion-label"><span class="mono-tag">// passion</span></div>
           <p class="passion-text" id="passion-text"></p>
         </div>
+
         <div class="certs-block" id="certs-block"></div>
-        <div class="security-block">
-          <div class="security-header">
-            <span class="security-shield">🛡️</span>
+
+        <!-- Security DNA -->
+        <div class="security-dna">
+          <div class="dna-header">
+            <div class="dna-icon-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22"><path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.5 5.25-1.35 9-6.25 9-11.5V7L12 2z"/></svg>
+            </div>
             <div>
-              <div class="security-title">Security-First, Always</div>
-              <div class="security-sub">Built into every system — not bolted on after</div>
+              <div class="dna-title">Security-First Architecture</div>
+              <div class="dna-sub">Built into every system — not bolted on after</div>
             </div>
           </div>
-          <div class="security-pills">
-            <span class="s-pill">Secure SDLC</span>
-            <span class="s-pill">API Key Proxy</span>
-            <span class="s-pill">CSP — No unsafe-inline</span>
-            <span class="s-pill">Rate Limiting</span>
-            <span class="s-pill">Input Sanitization</span>
-            <span class="s-pill">CORS Allowlist</span>
-            <span class="s-pill">XSS Protection</span>
-            <span class="s-pill">Audit Logging</span>
-            <span class="s-pill">HSTS Enforced</span>
-            <span class="s-pill">Prompt Injection Mitigation</span>
-            <span class="s-pill">Zero Trust Principles</span>
-            <span class="s-pill">OWASP Top 10</span>
+          <div class="dna-grid">
+            <div class="dna-card">
+              <div class="dna-card-icon">🔒</div>
+              <div class="dna-card-label">This Site</div>
+              <div class="dna-card-items">
+                <span>API Key Proxy</span>
+                <span>CSP No unsafe-inline</span>
+                <span>Rate Limiting</span>
+                <span>CORS Allowlist</span>
+                <span>Input Sanitization</span>
+                <span>HSTS Enforced</span>
+              </div>
+            </div>
+            <div class="dna-card">
+              <div class="dna-card-icon">⚔️</div>
+              <div class="dna-card-label">Offensive</div>
+              <div class="dna-card-items">
+                <span>CVE Replication</span>
+                <span>Payload Crafting</span>
+                <span>WPA2 Cracking</span>
+                <span>Deauth Attacks</span>
+                <span>RCE Techniques</span>
+                <span>Burp Suite</span>
+              </div>
+            </div>
+            <div class="dna-card">
+              <div class="dna-card-icon">🛡️</div>
+              <div class="dna-card-label">Defensive</div>
+              <div class="dna-card-items">
+                <span>SIEM / SOAR</span>
+                <span>Threat Hunting</span>
+                <span>IDS / IPS</span>
+                <span>DFIR</span>
+                <span>IOC Identification</span>
+                <span>Incident Response</span>
+              </div>
+            </div>
+            <div class="dna-card">
+              <div class="dna-card-icon">📋</div>
+              <div class="dna-card-label">GRC</div>
+              <div class="dna-card-items">
+                <span>NIST CSF</span>
+                <span>ISO 27001</span>
+                <span>Essential Eight</span>
+                <span>OWASP Top 10</span>
+                <span>Threat Modelling</span>
+                <span>Audit Logging</span>
+              </div>
+            </div>
           </div>
-          <p class="security-note">
-            This portfolio itself demonstrates the principles: the AI chatbot calls a serverless proxy
-            so the API key never reaches your browser. Security headers (including HSTS and a strict
-            CSP with no unsafe-inline), rate limiting, CORS allowlists, and prompt injection
-            sanitization are all active in production.
+          <p class="dna-note">
+            This portfolio itself demonstrates the principles: the AI chatbot calls a serverless proxy so the API key never reaches your browser. Security headers (HSTS, strict CSP with no unsafe-inline), rate limiting, CORS allowlists, and prompt-injection sanitization are all active in production.
           </p>
         </div>
       </section>
 
+      <!-- ─── SKILLS ─── -->
       <section class="panel" id="skills">
-        <div class="panel-header">
-          <span class="panel-num mono-tag">01</span>
-          <h2 class="panel-title">Technical Skills</h2>
-        </div>
+        <div class="section-label"><span class="mono-tag">// 01 — skills</span></div>
+        <h2 class="section-title">Technical Skills</h2>
         <div class="skills-container" id="skills-container"></div>
       </section>
 
+      <!-- ─── PROJECTS ─── -->
       <section class="panel" id="projects">
-        <div class="panel-header">
-          <span class="panel-num mono-tag">02</span>
-          <h2 class="panel-title">Projects</h2>
-        </div>
+        <div class="section-label"><span class="mono-tag">// 02 — projects</span></div>
+        <h2 class="section-title">Projects</h2>
         <div class="projects-container" id="projects-container"></div>
       </section>
 
+      <!-- ─── EXPERIENCE ─── -->
       <section class="panel" id="experience">
-        <div class="panel-header">
-          <span class="panel-num mono-tag">03</span>
-          <h2 class="panel-title">Experience</h2>
-        </div>
+        <div class="section-label"><span class="mono-tag">// 03 — experience</span></div>
+        <h2 class="section-title">Experience</h2>
         <div id="exp-container"></div>
-        <div class="panel-header" style="margin-top:52px">
-          <span class="panel-num mono-tag">04</span>
-          <h2 class="panel-title">Leadership &amp; Volunteering</h2>
-        </div>
+
+        <div class="sub-section-label"><span class="mono-tag">// 04 — leadership &amp; volunteering</span></div>
+        <h2 class="section-title">Leadership &amp; Volunteering</h2>
         <div id="vol-container"></div>
       </section>
 
+      <!-- ─── CONTACT ─── -->
       <section class="panel" id="contact">
-        <div class="panel-header">
-          <span class="panel-num mono-tag">05</span>
-          <h2 class="panel-title">Get in Touch</h2>
-        </div>
+        <div class="section-label"><span class="mono-tag">// 05 — contact</span></div>
+        <h2 class="section-title">Get in Touch</h2>
         <p class="contact-intro" id="contact-intro"></p>
         <div class="contact-links" id="contact-links"></div>
       </section>
 
-    </main>
-
-  </div>
+    </div><!-- /main-wrap -->
+  </div><!-- /app -->
 
   <script src="js/app.js"></script>
 </body>
