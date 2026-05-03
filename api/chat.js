@@ -17,7 +17,7 @@
 // Model default: gemini-2.5-flash. Override with GEMINI_MODEL env var if needed
 // (e.g. "gemini-2.0-flash" as a fallback if 2.5 is unavailable in your region).
 
-const logger  = require("./logger");
+const logger  = require("./_logger");
 const profile = require("../data/profile");
 const resume  = require("../data/resume");
 

@@ -7,7 +7,7 @@
 //   • Cache-Control headers — reduces load; no user data is cached (profile is public-read-only)
 //   • module.exports (CommonJS) — avoids ESM/CJS mismatch that would cause "Unexpected token"
 
-const logger  = require("./logger");
+const logger  = require("./_logger");
 const profile = require("../data/profile");
 
 const ALLOWED_ORIGINS = () => [

@@ -7,7 +7,7 @@ const resume = `
 ASHUTOSH GUPTA — Cybersecurity Graduate & Technology Analyst
 Focus areas: GRC · Cloud Security · Business Analysis · Agile Delivery
 Contact: ashutoshgupta20041@gmail.com · 0406 471 880 · Sydney, Australia
-Links: linkedin.com/in/ash-gupta3 · github.com/ashuthecoder · ashutoshgupta.me
+Links: linkedin.com/in/ashutosh-gupta-617529294 · github.com/ashuthecoder · ashutoshgupta.me
 
 PROFESSIONAL SUMMARY
 Cybersecurity graduate from Macquarie University (Dec 2025) with broad, hands-on experience

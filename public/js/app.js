@@ -133,7 +133,8 @@ function renderVolunteering(p) {
 }
 
 function renderContact(p) {
-  setHTML("contact-intro", `${esc(p.name)} just graduated and is ${p.availability.toLowerCase()} Feel free to reach out — he responds quickly.`);
+  const avail = p.availability.charAt(0).toLowerCase() + p.availability.slice(1);
+  setHTML("contact-intro", `${esc(p.name)} just graduated and is ${esc(avail)} Feel free to reach out — he responds quickly.`);
   setHTML("contact-links", [
     { icon:"✉️", label:"Email",       val:p.email,                           href:`mailto:${p.email}` },
     { icon:"🐙", label:"GitHub",      val:p.github.replace("https://",""),   href:p.github,    ext:true },
